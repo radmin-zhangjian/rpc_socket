@@ -1,0 +1,20 @@
+{
+    "name": "yuqinglan/rpc_socket",
+    "description": "RPC socket 测试",
+    "type": "library",
+    "require": {
+        "php": ">=5.4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "zhangjian",
+            "email": "6204000@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "zhangjian\\Push\\": ""
+        }
+    }
+}
