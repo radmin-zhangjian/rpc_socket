@@ -54,48 +54,47 @@ class RpcServer {
                             unset($listen_writes[$key]);
                             echo "客户端关闭\n";
                         } else {
-                            //解析客户端发送过来的协议
-                            $classRet = preg_match('/Rpc-Class:\s(.*);' . PHP_EOL . '/i', $buff, $class);
-                            $methodRet = preg_match('/Rpc-Method:\s(.*);' . PHP_EOL . '/i', $buff, $method);
-                            $paramsRet = preg_match('/Rpc-Params:\s(.*);' . PHP_EOL . '/i', $buff, $params);
-
-                            echo "执行了 - ".$class[1]."\\".$method[1]."\n";
-
-                            if($classRet && $methodRet) {
-                                $class = ucfirst($class[1]);
-                                $method = $method[1];
-                                $params = $params[1];
-                                $file = $realPath . '/' . $class . '.php';
-                                //判断文件是否存在，如果有，则引入文件
-                                if(file_exists($file)) {
-                                    require_once $file;
-                                    if (class_exists($class)) {
-                                        //实例化类，并调用客户端指定的方法
-                                        $obj = new $class();
-                                        if (method_exists($class, $method)) {
-                                            //如果有参数，则传入指定参数
-                                            if (!$params) {
-                                                $data = $obj->$method();
-                                            } else {
-                                                $data = $obj->$method(json_decode($params, true));
-                                            }
-                                            //把运行后的结果返回给客户端
-                                            fwrite($sock, $data . PHP_EOL);
-                                        } else {
-                                            fwrite($sock, 'error: method not exists' . PHP_EOL);
-                                        }
-                                    } else {
-                                        fwrite($sock, 'error: class not exists' . PHP_EOL);
-                                    }
-                                } else {
-                                    fwrite($sock, 'error: file not exists' . PHP_EOL);
-                                }
-                            } else {
-                                fwrite($sock, 'error: class or method not exists' . PHP_EOL);
-                            }
                             // 是否可写
                             if (in_array($sock, $can_writes)){
-                                fwrite($sock, "read ok!");
+                                //解析客户端发送过来的协议
+                                $classRet = preg_match('/Rpc-Class:\s(.*);' . PHP_EOL . '/i', $buff, $class);
+                                $methodRet = preg_match('/Rpc-Method:\s(.*);' . PHP_EOL . '/i', $buff, $method);
+                                $paramsRet = preg_match('/Rpc-Params:\s(.*);' . PHP_EOL . '/i', $buff, $params);
+
+                                echo "执行了 - ".$class[1]."\\".$method[1]."\n";
+
+                                if($classRet && $methodRet) {
+                                    $class = ucfirst($class[1]);
+                                    $method = $method[1];
+                                    $params = $params[1];
+                                    $file = $realPath . '/' . $class . '.php';
+                                    //判断文件是否存在，如果有，则引入文件
+                                    if(file_exists($file)) {
+                                        require_once $file;
+                                        if (class_exists($class)) {
+                                            //实例化类，并调用客户端指定的方法
+                                            $obj = new $class();
+                                            if (method_exists($class, $method)) {
+                                                //如果有参数，则传入指定参数
+                                                if (!$params) {
+                                                    $data = $obj->$method();
+                                                } else {
+                                                    $data = $obj->$method(json_decode($params, true));
+                                                }
+                                                //把运行后的结果返回给客户端
+                                                fwrite($sock, $data . PHP_EOL);
+                                            } else {
+                                                fwrite($sock, 'error: method not exists' . PHP_EOL);
+                                            }
+                                        } else {
+                                            fwrite($sock, 'error: class not exists' . PHP_EOL);
+                                        }
+                                    } else {
+                                        fwrite($sock, 'error: file not exists' . PHP_EOL);
+                                    }
+                                } else {
+                                    fwrite($sock, 'error: class or method not exists' . PHP_EOL);
+                                }
                             }
                             // 关闭客户端
                             fclose($sock);
