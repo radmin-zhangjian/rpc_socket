@@ -61,9 +61,10 @@ class RpcServer {
                                 $methodRet = preg_match('/Rpc-Method:\s(.*);' . PHP_EOL . '/i', $buff, $method);
                                 $paramsRet = preg_match('/Rpc-Params:\s(.*);' . PHP_EOL . '/i', $buff, $params);
 
-                                echo "执行了 - ".$class[1]."\\".$method[1]."\n";
-
                                 if($classRet && $methodRet) {
+
+                                    echo "执行了 - ".$class[1]."\\".$method[1]."\n";
+
                                     $class = ucfirst($class[1]);
                                     $method = $method[1];
                                     $params = $params[1];
