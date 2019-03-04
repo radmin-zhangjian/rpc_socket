@@ -50,17 +50,22 @@ class RpcServer {
                         $buff = '';
                         $content = '';
                         //读取请求数据直到遇到\r\n结束符
-                        while (!preg_match('#' . PHP_EOL . '#', $buff)) {
-                            $buff = fread($c, 1024);
-                            $content .= preg_replace('#' . PHP_EOL . '#', '', $buff);
-                        }
-                        echo $peer.': '.trim($content).PHP_EOL;
+//                        while (!preg_match('#' . PHP_EOL . '#', $buff)) {
+//                            $buff = fread($c, 1024);
+//                            $content .= preg_replace('#' . PHP_EOL . '#', '', $buff);
+//                        }
+//                        echo $peer.': '.($content).PHP_EOL;
 //                        fwrite($c, 'Hello '.$peer.PHP_EOL);
 
+                        while (($buff = fread($c, 1024)) != '') {
+                            $content .= $buff;
+                        }
+                        echo $peer.': '.preg_replace('#' . PHP_EOL . '#', '', $content).PHP_EOL;
+
                         //解析客户端发送过来的协议
-                        $classRet = preg_match('/Rpc-Class:\s(.*);' . PHP_EOL . '/i', $buff, $class);
-                        $methodRet = preg_match('/Rpc-Method:\s(.*);' . PHP_EOL . '/i', $buff, $method);
-                        $paramsRet = preg_match('/Rpc-Params:\s(.*);' . PHP_EOL . '/i', $buff, $params);
+                        $classRet = preg_match('/Rpc-Class:\s(.*);' . PHP_EOL . '/i', $content, $class);
+                        $methodRet = preg_match('/Rpc-Method:\s(.*);' . PHP_EOL . '/i', $content, $method);
+                        $paramsRet = preg_match('/Rpc-Params:\s(.*);' . PHP_EOL . '/i', $content, $params);
 
                         if($classRet && $methodRet) {
                             $class = ucfirst($class[1]);
